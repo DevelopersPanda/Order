@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Order.Models;
+using Order.SqlServices;
 using Dapper;
+using static Order.Core.OrderResult;
 
 namespace Order.Controllers
 {
@@ -29,23 +31,52 @@ namespace Order.Controllers
         //    return Orderlist;
         //}
 
-        public IEnumerable<OrderModel> OrderQuery([FromQuery]int id)
+        [HttpGet("{OrderData}")]
+        public OrderResults<IEnumerable<OrderDataVM>> OrderQuery([FromQuery]int id)
         {
             //i = 10248;
 
-            var dynamicParams = new DynamicParameters();//←動態參數
-            dynamicParams.Add("OrderID", id);
+            var Query = new DataQuery();
+            var result = Query.GetOrderData(id);
+            return result;
 
+        }
 
-            SqlConnection conn = new SqlConnection("Data Source=howardorder.database.windows.net;Initial Catalog=OrderDatabase;Persist Security Info=True;User Id =howard;Password=Yihao1222");
-            conn.Open();
+        [HttpPost("{OrderInsert}")]
+        public bool OrderInsert([FromQuery]InsertOrders Insertdata)
+        {
+            var Insert = new DataInsert();
+            var InsertOrder = Insert.InsertOrderData(Insertdata);
 
-            string strSql = @"Select * from Orders where [OrderID] = @OrderID";
-            var result = conn.Query<OrderModel>(strSql,dynamicParams);
+            if(InsertOrder == 0)
+            {
+                return false;
+            }
+            else
+            {
+                Insertdata.OrderID = InsertOrder;
+                var result = Insert.InsertOrderDetailData(Insertdata);
+                return true;
+            }
+        }
 
-            conn.Close();
+        [HttpPut("OrderUpdate")]
+        public bool OrderUpdate([FromQuery]updateOrders UpdateData)
+        {
+            var Update = new DataUpdate();
+            var result = Update.UpdateOrderData(UpdateData);
+            return result;
+        }
+
+        [HttpPost("OrderDelete")]
+        public bool OrderDelete([FromQuery]int id)
+        {
+            var Delete = new DataDelete();
+            var result = Delete.DeleteOrderData(id);
 
             return result;
         }
+
+
     }
 }
