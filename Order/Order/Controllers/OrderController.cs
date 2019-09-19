@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Order.Models;
 using Order.SqlServices;
-using Dapper;
 using static Order.Core.OrderResult;
 
 namespace Order.Controllers
@@ -17,13 +11,6 @@ namespace Order.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly OrderContext _Orders;
-
-        public OrderController(OrderContext context)
-        {
-            _Orders = context;
-        }
-
         //[HttpGet]
         //public async Task<ActionResult<IEnumerable<OrderModel>>> GetOrderModel()
         //{
@@ -32,47 +19,74 @@ namespace Order.Controllers
         //}
 
         [HttpGet("{OrderData}")]
-        public OrderResults<IEnumerable<OrderDataVM>> OrderQuery([FromQuery]int id)
+        public OrderResults<IEnumerable<OrderDataVM>> OrderQuery([FromQuery]int OrderID)
         {
-            //i = 10248;
-
             var Query = new DataQuery();
-            var result = Query.GetOrderData(id);
+            var result = Query.GetOrderData(OrderID);
             return result;
-
         }
 
         [HttpPost("{OrderInsert}")]
-        public bool OrderInsert([FromQuery]InsertOrders Insertdata)
+        [Consumes("application/json")]
+        public string OrderInsert([FromQuery]InsertOrders Insertdata,[FromBody]InsertOrderDetails IOD)
         {
+            for (int i = 0; i < IOD.ProductID.Count(); i++)
+            {
+                //required information
+                if (IOD.ProductID[i] == null)
+                    return "Please input ProductId";
+                if (IOD.Quantity[i] == null)
+                    return "Please input Quantity";
+                if (IOD.Discount[i] == null)
+                    return "Please input Discount";
+            }
+            //Insert Orders
             var Insert = new DataInsert();
             var InsertOrder = Insert.InsertOrderData(Insertdata);
-
-            if(InsertOrder == 0)
-            {
-                return false;
-            }
-            else
-            {
-                Insertdata.OrderID = InsertOrder;
-                var result = Insert.InsertOrderDetailData(Insertdata);
-                return true;
-            }
+            //Insert OrderDetails
+            var result = Insert.InsertOrderDetailData(IOD,InsertOrder);
+            return result;
         }
 
         [HttpPut("OrderUpdate")]
-        public bool OrderUpdate([FromQuery]updateOrders UpdateData)
+        public string OrderUpdate([FromQuery]updateOrders UpdateData,[FromBody]UpdateOrderDetails UpdateDetailData)
         {
+            //required information
+            if (UpdateData.OrderID == 0)
+                return "Please input OrderID";
+            string result,updateOrder,updateOrderDetial;
             var Update = new DataUpdate();
-            var result = Update.UpdateOrderData(UpdateData);
+            //Determine if Order need to update
+            if (UpdateData.CustomerID != null || UpdateData.CustomerID != null || UpdateData.EmployeeID != null || UpdateData.OrderDate != null || UpdateData.RequiredDate != null || UpdateData.ShipVia != null ||
+                UpdateData.Freight != null || UpdateData.ShipName != null || UpdateData.ShipAddress != null || UpdateData.ShipCity != null || UpdateData.ShipRegion != null || UpdateData.ShipPostalCode != null || UpdateData.ShipCountry != null)
+            {
+                updateOrder = Update.UpdateOrderData(UpdateData);
+            }
+            else
+            {
+                updateOrder = "Order not Edit";
+            }
+            //Determine if Order Detail need to update & ProductID is required information
+            if (UpdateDetailData.ProductID != null & (UpdateDetailData.Quantity != null || UpdateDetailData.UnitPrice != null || UpdateDetailData.Discount != null))
+            {
+                updateOrderDetial = Update.UpdateOrderDetailData(UpdateDetailData, UpdateData.OrderID);
+            }
+            else
+            {
+                updateOrderDetial = "Order Detail not Edit";
+            }
+            result = updateOrder + " & " + updateOrderDetial;
             return result;
         }
 
         [HttpPost("OrderDelete")]
-        public bool OrderDelete([FromQuery]int id)
+        public string OrderDelete([FromQuery]int Orderid)
         {
+            //required information
+            if (Orderid == 0)
+                return "Please Input OrderID";
             var Delete = new DataDelete();
-            var result = Delete.DeleteOrderData(id);
+            var result = Delete.DeleteOrderData(Orderid);
 
             return result;
         }

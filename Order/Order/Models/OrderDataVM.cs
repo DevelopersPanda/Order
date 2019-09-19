@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Order.Models
 {
@@ -11,6 +8,7 @@ namespace Order.Models
         public string ShipName { get; set; }
         public int ProductID { get; set; }
         public string ProductName { get; set; }
+        public float UnitPrice { get; set; }
         public int EmployeeID { get; set; }
         public string EmployeeName { get; set; }
         public string CustomerID { get; set; }
@@ -26,17 +24,13 @@ namespace Order.Models
         public DateTime? RequiredDate  { get; set; }
         public DateTime? ShippedDate { get; set; }
         public int? ShipVia { get; set; }
-        public int? Freight { get; set; }
+        public float? Freight { get; set; }
         public string ShipName { get; set; }
         public string ShipAddress { get; set; }
         public string ShipCity { get; set; }
         public string ShipRegion { get; set; }
         public string ShipPostalCode { get; set; }
         public string ShipCountry { get; set; }
-        public int ProductID { get; set; }
-        public float? UnitPrice { get; set; }
-        public int Quantity { get; set; }
-        public float Discount { get; set; }
     }
     public class InsertProduct
     {
@@ -53,11 +47,11 @@ namespace Order.Models
     }
     public class InsertOrderDetails
     {
-        public int OrderID { get; set; }
-        public int ProductID { get; set; }
-        public float UnitPrice { get; set; }
-        public int Quantity { get; set; }
-        public float Discount { get; set; }
+        public int?[] OrderID { get; set; }
+        public int?[] ProductID { get; set; }
+        public float?[] UnitPrice { get; set; }
+        public int?[] Quantity { get; set; }
+        public float?[] Discount { get; set; }
     }
 
     public class updateOrders
@@ -69,12 +63,26 @@ namespace Order.Models
         public DateTime? RequiredDate { get; set; }
         public DateTime? ShippedDate { get; set; }
         public int? ShipVia { get; set; }
-        public int? Freight { get; set; }
+        public float? Freight { get; set; }
         public string ShipName { get; set; }
         public string ShipAddress { get; set; }
         public string ShipCity { get; set; }
         public string ShipRegion { get; set; }
         public string ShipPostalCode { get; set; }
         public string ShipCountry { get; set; }
+    }
+    public class UpdateOrderDetails
+    {
+        public int[] OrderID { get; set; }
+        public int?[] ProductID { get; set; }
+        public float?[] UnitPrice { get; set; }
+        public int?[] Quantity { get; set; }
+        public float?[] Discount { get; set; }
+    }
+
+    public class queryPrice
+    {
+        public float? UnitPrice { get; set; }
+        public float? Discount { get; set; }
     }
 }

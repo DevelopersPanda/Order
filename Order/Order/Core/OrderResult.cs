@@ -12,7 +12,7 @@ namespace Order.Core
             /// <summary>
             /// Execution result
             /// </summary>
-            public string Status { get; set; } = "error";
+            public string Status { get; set; }
 
             /// <summary>
             /// Execution message

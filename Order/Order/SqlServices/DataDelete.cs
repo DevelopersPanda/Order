@@ -1,38 +1,35 @@
 ﻿using Dapper;
-using Order.Models;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Order.SqlServices
 {
     public class DataDelete
     {
-        public bool DeleteOrderData(int id)
+        public string DeleteOrderData(int OrderID)
         {
+            string result;
             var dynamicParams = new DynamicParameters();//←動態參數
-            dynamicParams.Add("OrderID", id);
+            dynamicParams.Add("OrderID", OrderID);
 
             SqlConnection conn = new SqlConnection("Data Source=howardorder.database.windows.net;Initial Catalog=OrderDatabase;Persist Security Info=True;User Id =howard;Password=Yihao1222");
             conn.Open();
-
-            var SQL = conn.Execute(
+            try
+            {
+                var SQL = conn.Execute(
                 @"DELETE [OD]
                     FROM [Order Details] OD
                     join Orders Ord on OD.OrderID = Ord.OrderID 
                     WHERE Ord.OrderID = @OrderID;
-                  DELETE From Orders 
+                    DELETE From Orders 
                     where OrderID = @OrderID"
-                , dynamicParams);
-
-
+                    , dynamicParams);
+                result = "Delete Success";
+            }
+            catch
+            {
+                result = "Delete failure";
+            }
             conn.Close();
-
-
-            bool result = true;
-
             return result;
         }
     }
