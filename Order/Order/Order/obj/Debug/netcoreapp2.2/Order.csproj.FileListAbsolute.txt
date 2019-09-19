@@ -1,0 +1,14 @@
+C:\Order\Order\Order\bin\Debug\netcoreapp2.2\Order.deps.json
+C:\Order\Order\Order\bin\Debug\netcoreapp2.2\Order.runtimeconfig.json
+C:\Order\Order\Order\bin\Debug\netcoreapp2.2\Order.runtimeconfig.dev.json
+C:\Order\Order\Order\bin\Debug\netcoreapp2.2\Order.dll
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.csprojAssemblyReference.cache
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.csproj.CoreCompileInputs.cache
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.RazorAssemblyInfo.cache
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.RazorAssemblyInfo.cs
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.AssemblyInfoInputs.cache
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.AssemblyInfo.cs
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.RazorTargetAssemblyInfo.cache
+C:\Order\Order\Order\bin\Debug\netcoreapp2.2\Order.pdb
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.dll
+C:\Order\Order\Order\obj\Debug\netcoreapp2.2\Order.pdb
