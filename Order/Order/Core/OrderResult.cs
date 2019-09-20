@@ -13,7 +13,6 @@ namespace Order.Core
             /// Execution result
             /// </summary>
             public string Status { get; set; }
-
             /// <summary>
             /// Execution message
             /// </summary>
@@ -24,7 +23,7 @@ namespace Order.Core
         /// Execution result container
         /// </summary>
         /// <typeparam name="T">Execution return data</typeparam>
-        /// <seealso cref="WsResult" />
+        /// <seealso cref="OrderResult" />
         public class OrderResults<T> : OrderResult
         {
             /// <summary>

@@ -17,6 +17,7 @@ namespace Order.SqlServices
             var queryOrderID = conn.Query<OrderDataVM>(
                 @"select max(OrderID) +1 as OrderID From Orders"
                 );
+            conn.Close();
             dynamicParams.Add("OrderID", queryOrderID.First().OrderID);
             dynamicParams.Add("CustomerID", Insertdata.CustomerID);
             dynamicParams.Add("EmployeeID", Insertdata.EmployeeID);
@@ -32,17 +33,17 @@ namespace Order.SqlServices
             dynamicParams.Add("ShipPostalCode", Insertdata.ShipPostalCode);
             dynamicParams.Add("ShipCountry", Insertdata.ShipCountry);
 
-            var SQL = conn.Execute(
-                @"SET IDENTITY_INSERT Orders ON
+            string SqlString = @"SET IDENTITY_INSERT Orders ON
                 insert into Orders
                     (OrderID ,CustomerID ,EmployeeID ,OrderDate ,RequiredDate ,ShippedDate ,ShipVia ,Freight ,ShipName 
                     ,ShipAddress ,ShipCity ,ShipRegion ,ShipPostalCode ,ShipCountry)
                     Values
                     (@OrderID ,@CustomerID ,@EmployeeID ,@OrderDate ,@RequiredDate ,@ShippedDate ,@ShipVia ,@Freight ,@ShipName
                     ,@ShipAddress ,@ShipCity ,@ShipRegion ,@ShipPostalCode ,@ShipCountry)
-                SET IDENTITY_INSERT Orders Off"
-                , dynamicParams);
-            conn.Close();
+                SET IDENTITY_INSERT Orders Off";
+
+            var Insert = new SqlServices();
+            string result = Insert.SqlInsert(SqlString,dynamicParams);
             return queryOrderID.First().OrderID;
         }
         public string InsertOrderDetailData(InsertOrderDetails Insertdata,int getOrderID)
@@ -50,6 +51,9 @@ namespace Order.SqlServices
             var dynamicParams = new DynamicParameters();//←動態參數
             SqlConnection conn = new SqlConnection("Data Source=howardorder.database.windows.net;Initial Catalog=OrderDatabase;Persist Security Info=True;User Id =howard;Password=Yihao1222");
             conn.Open();
+            var Insert = new SqlServices();
+            string SqlString;
+            string result = "";
 
             for(int i = 0; i < Insertdata.ProductID.Count(); i++) {
                 //Insertdata.OrderID[i] = getOrderID;
@@ -68,15 +72,14 @@ namespace Order.SqlServices
                 dynamicParams.Add("Quantity", Insertdata.Quantity[i]);
                 dynamicParams.Add("Discount", Insertdata.Discount[i]);
 
-                var SQL = conn.Execute(
-                     @"insert into [Order Details]
-                    (OrderID ,ProductID ,UnitPrice ,Quantity ,Discount) 
-                    Values
-                    (@OrderID ,@ProductID ,@UnitPrice ,@Quantity ,@Discount)"
-                        , dynamicParams);
+                SqlString = @"insert into [Order Details]
+                            (OrderID ,ProductID ,UnitPrice ,Quantity ,Discount) 
+                            Values
+                            (@OrderID ,@ProductID ,@UnitPrice ,@Quantity ,@Discount)";
+                result = Insert.SqlInsert(SqlString, dynamicParams);
             }
             conn.Close();
-            return "Success";
+            return result;
         }
     }
 }
