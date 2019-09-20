@@ -12,8 +12,6 @@ namespace Order.SqlServices
             var dynamicParams = new DynamicParameters();//←動態參數
             dynamicParams.Add("OrderID", UpdateData.OrderID);
             var sqlCondition = @"";
-            string SqlString, result;
-            var Update = new SqlServices();
 
             SqlConnection conn = new SqlConnection("Data Source=howardorder.database.windows.net;Initial Catalog=OrderDatabase;Persist Security Info=True;User Id =howard;Password=Yihao1222");
             conn.Open();
@@ -27,7 +25,6 @@ namespace Order.SqlServices
             {
                 dynamicParams.Add("CustomerID", UpdateData.CustomerID);
                 var queryCustomer = conn.Query<updateOrders>("select CustomerID From Customers where CustomerID = @CustomerID", dynamicParams);
-                conn.Close();
                 if (queryCustomer.Count() != 0)
                 {
                     sqlCondition = sqlCondition + "CustomerID = @CustomerID,";
@@ -89,22 +86,19 @@ namespace Order.SqlServices
             }
             sqlCondition = sqlCondition.Remove(sqlCondition.LastIndexOf(","), 1);
 
-            SqlString = $@"UPDATE Orders SET 
+            var SQL = conn.Execute(
+                $@"UPDATE Orders SET 
                 {sqlCondition}
-                WHERE OrderID = @OrderID";
-            result = Update.SqlUpdate(SqlString, dynamicParams);
-
-            if(result.Equals("Update Success"))
-                result = "Edit Order - Success";
-            
+                WHERE OrderID = @OrderID"
+                , dynamicParams);
+            conn.Close();
+            string result = "Edit Order - Success";
             return result;
         }
         public string UpdateOrderDetailData(UpdateOrderDetails UOD,int getOrderID)
         {
             var dynamicParams = new DynamicParameters();//←動態參數
             var sqlCondition = @"";
-            string SqlString, result;
-            var Update = new SqlServices();
 
             SqlConnection conn = new SqlConnection("Data Source=howardorder.database.windows.net;Initial Catalog=OrderDatabase;Persist Security Info=True;User Id =howard;Password=Yihao1222");
             conn.Open();
@@ -147,20 +141,22 @@ namespace Order.SqlServices
 
                 var queryCustomer = conn.Query<updateOrders>(@"select PD.ProductID From Products PD Join[Order Details] OD on PD.ProductID = OD.ProductID 
                                                             where OrderID = @OrderID And PD.ProductID = @ProductID", dynamicParams);
-                conn.Close();
                 if (queryCustomer.Count() != 0)
                 {
-                    SqlString = $@"UPDATE [Order Details] SET 
-                                    {sqlCondition}
-                                    WHERE OrderID = @OrderID
-                                    And ProductID = @ProductID";
-                    result = Update.SqlUpdate(SqlString, dynamicParams);
+                    var SQL = conn.Execute(
+                     $@"UPDATE [Order Details] SET 
+                        {sqlCondition}
+                        WHERE OrderID = @OrderID
+                        And ProductID = @ProductID"
+                         , dynamicParams);
                 }
                 else
                 {
+                    conn.Close();
                     return "No such ProductID";
                 }
             }
+            conn.Close();
             return "Edit Order Detail - Success";
         }
     }
